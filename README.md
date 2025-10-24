@@ -2,14 +2,14 @@
 
 EmbedCore is a simulated embedded systems middleware framework that combines C++ hardware abstraction with Rust application development. It's designed for robotics applications with motor and servo control, featuring a cooperative task scheduler and safe device abstractions.
 
-## 🏗️ Architecture
+## Architecture
 
 - **C++ Hardware Abstraction Layer (HAL)** - Simulated GPIO, PWM, UART, timers, and motor drivers
 - **Rust Application Framework** - Safe device wrappers, task scheduler, and motor control logic
 - **FFI Bridge** - Safe interoperability between C++ and Rust
 - **Desktop Simulator** - No actual hardware required
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 embedcore/
@@ -51,7 +51,7 @@ embedcore/
     └── robot_arm.rs              # Multi-motor coordination
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -95,7 +95,7 @@ Multi-motor coordination with task scheduling:
 cargo run --example robot_arm
 ```
 
-## 🔧 Features
+## Features
 
 ### Hardware Abstraction Layer (C++)
 
@@ -122,7 +122,7 @@ cargo run --example robot_arm
 - **Task Management** - Create, suspend, resume, and remove tasks
 - **Statistics** - Runtime performance monitoring
 
-## 📖 Usage Examples
+## Usage Examples
 
 ### Basic GPIO Control
 
@@ -193,7 +193,7 @@ fn main() {
 }
 ```
 
-## 🎯 Use Cases
+## Use Cases
 
 ### Robotics Applications
 
@@ -209,7 +209,7 @@ fn main() {
 - **Control Systems** - PID control and feedback loops
 - **System Integration** - Hardware-software co-design
 
-## 🔒 Safety Features
+## Safety Features
 
 - **Bounds Checking** - All motor positions and speeds are validated
 - **Emergency Stop** - Global emergency stop for all motors
@@ -217,7 +217,7 @@ fn main() {
 - **Error Handling** - Comprehensive error types with recovery options
 - **Resource Management** - Automatic cleanup on device drop
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -231,7 +231,7 @@ cargo test -p embedcore-sys
 cargo test -- --nocapture
 ```
 
-## 📊 Performance
+## Performance
 
 The simulator provides realistic timing behavior:
 
@@ -241,7 +241,7 @@ The simulator provides realistic timing behavior:
 - **Task Scheduling** - 1ms tick resolution
 - **UART Communication** - Simulated transmission delays
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -249,17 +249,17 @@ The simulator provides realistic timing behavior:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Inspired by real embedded systems middleware frameworks
 - Built with Rust's safety guarantees and C++'s performance
 - Designed for educational and prototyping purposes
 
-## 📞 Support
+## Support
 
 For questions, issues, or contributions:
 
