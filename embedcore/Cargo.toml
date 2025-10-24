@@ -1,0 +1,15 @@
+[package]
+name = "embedcore"
+version = "0.1.0"
+edition = "2021"
+description = "Safe Rust abstractions for EmbedCore embedded systems middleware"
+license = "MIT"
+repository = "https://github.com/your-org/embedcore"
+
+[dependencies]
+embedcore-sys = { path = "../embedcore-sys" }
+libc = { workspace = true }
+thiserror = "1.0"
+
+[dev-dependencies]
+tokio = { version = "1.0", features = ["full"] }

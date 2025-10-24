@@ -1,0 +1,17 @@
+[package]
+name = "embedcore-sys"
+version = "0.1.0"
+edition = "2021"
+description = "FFI bindings for EmbedCore C++ Hardware Abstraction Layer"
+license = "MIT"
+repository = "https://github.com/your-org/embedcore"
+
+[build-dependencies]
+cc = { workspace = true }
+
+[dependencies]
+libc = { workspace = true }
+
+[lib]
+name = "embedcore_sys"
+crate-type = ["rlib", "staticlib"]

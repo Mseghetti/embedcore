@@ -1,0 +1,32 @@
+# Rust
+/target/
+Cargo.lock
+**/*.rs.bk
+
+# C++
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+build/
+dist/
+*.log
