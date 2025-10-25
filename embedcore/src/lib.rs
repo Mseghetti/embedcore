@@ -6,11 +6,13 @@
 pub mod devices;
 pub mod scheduler;
 pub mod task;
+pub mod security;
 
 // Re-export commonly used types
 pub use devices::{Gpio, Pwm, Uart, Motor, MotorType, MotorDirection};
 pub use scheduler::Scheduler;
 pub use task::{Task, TaskPriority, TaskState};
+pub use security::{SecurityMonitor, SecurityConfig, SecurityError, AttackType, ThreatLevel, init_security, check_operation_security, get_security_monitor};
 
 /// Initialize the EmbedCore system
 /// 
@@ -24,6 +26,15 @@ pub fn init() {
         embedcore_sys::timer_init();
         embedcore_sys::motor_init();
     }
+}
+
+/// Initialize the EmbedCore system with security monitoring
+/// 
+/// This function initializes all hardware abstraction layers and security
+/// monitoring. Use this instead of init() when you want security features.
+pub fn init_with_security(config: SecurityConfig) {
+    init();
+    init_security(config);
 }
 
 /// Get the current system time in milliseconds

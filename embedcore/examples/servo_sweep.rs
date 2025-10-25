@@ -1,8 +1,11 @@
-//! Servo Sweep example - Servo motor control
+//! Servo Sweep example - Servo motor control (Basic Version)
 //! 
-//! This example demonstrates servo motor control by sweeping a servo
+//! This example demonstrates basic servo motor control by sweeping a servo
 //! motor from 0 to 180 degrees and back. The servo is connected to
 //! PWM channel 0.
+//! 
+//! For security-enhanced version, see: secure_servo_sweep.rs
+//! For comprehensive security demo, see: security_demo.rs
 
 use embedcore::{init, delay_ms};
 use embedcore::devices::motor::{Motor, MotorConfig, MotorType};

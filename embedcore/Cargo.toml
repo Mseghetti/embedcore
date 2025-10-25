@@ -10,6 +10,7 @@ repository = "https://github.com/your-org/embedcore"
 embedcore-sys = { path = "../embedcore-sys" }
 libc = { workspace = true }
 thiserror = "1.0"
+rand = "0.8"
 
 [dev-dependencies]
 tokio = { version = "1.0", features = ["full"] }

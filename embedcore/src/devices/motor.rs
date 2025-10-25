@@ -170,6 +170,12 @@ impl Motor {
     /// # Returns
     /// * `Result<(), MotorError>` - Ok if successful, Err otherwise
     pub fn set_speed(&self, speed: u32) -> Result<(), MotorError> {
+        // Check security before operation
+        if let Err(security_error) = crate::check_operation_security("motor_set_speed", Some(self.motor_id)) {
+            eprintln!("🚨 SECURITY ALERT: {} - Motor {} speed change blocked", security_error, self.motor_id);
+            return Err(MotorError::InvalidSpeed(speed)); // Convert security error to motor error
+        }
+        
         if speed > 100 {
             return Err(MotorError::InvalidSpeed(speed));
         }
@@ -212,6 +218,12 @@ impl Motor {
     /// # Returns
     /// * `Result<(), MotorError>` - Ok if successful, Err otherwise
     pub fn set_position(&self, position: f32) -> Result<(), MotorError> {
+        // Check security before operation
+        if let Err(security_error) = crate::check_operation_security("motor_set_position", Some(self.motor_id)) {
+            eprintln!("🚨 SECURITY ALERT: {} - Motor {} position change blocked", security_error, self.motor_id);
+            return Err(MotorError::InvalidPosition(position)); // Convert security error to motor error
+        }
+        
         if self.config.motor_type != MotorType::Servo {
             return Err(MotorError::NotServoMotor);
         }
