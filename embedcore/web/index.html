@@ -3,8 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmbedCore Robot Dashboard</title>
+    <title>EmbedCore Control Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8fafc;
+            --tertiary-bg: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,372 +35,569 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .container {
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-indicator.connected {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-indicator.disconnected {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .emergency-btn {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .emergency-btn:hover {
+            background: #dc2626;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 24px;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            width: 100%;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .dashboard {
+        .content-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            height: calc(100vh - 112px);
         }
 
-        .panel {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            backdrop-filter: blur(10px);
-        }
-
-        .robot-visualization {
-            grid-column: 1 / -1;
-            height: 400px;
-            position: relative;
+        /* Robot Visualization Panel */
+        .visualization-panel {
+            background: var(--primary-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--tertiary-bg);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .panel-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .visualization-content {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
         }
 
         .robot-arm {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position: relative;
             transform-origin: center;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .base {
-            width: 80px;
-            height: 80px;
-            background: #4a5568;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #475569, #334155);
             border-radius: 50%;
-            position: absolute;
-            top: -40px;
-            left: -40px;
-            border: 3px solid #2d3748;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+            border: 2px solid #1e293b;
         }
 
         .shoulder {
-            width: 8px;
-            height: 120px;
-            background: #e53e3e;
+            width: 6px;
+            height: 100px;
+            background: linear-gradient(180deg, #ef4444, #dc2626);
             position: absolute;
-            top: -120px;
-            left: -4px;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
             transform-origin: bottom center;
-            border-radius: 4px;
+            border-radius: 3px;
+            box-shadow: var(--shadow-md);
         }
 
         .elbow {
-            width: 8px;
-            height: 100px;
-            background: #38a169;
+            width: 6px;
+            height: 80px;
+            background: linear-gradient(180deg, #10b981, #059669);
             position: absolute;
-            top: -100px;
-            left: -4px;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
             transform-origin: bottom center;
-            border-radius: 4px;
+            border-radius: 3px;
+            box-shadow: var(--shadow-md);
         }
 
         .end-effector {
-            width: 20px;
-            height: 20px;
-            background: #d69e2e;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             border-radius: 50%;
             position: absolute;
-            top: -10px;
-            left: -10px;
-            border: 2px solid #b7791f;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: var(--shadow-md);
+            border: 2px solid #b45309;
         }
 
         .joint-label {
             position: absolute;
-            background: rgba(0,0,0,0.8);
+            background: rgba(15, 23, 42, 0.9);
             color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+            backdrop-filter: blur(8px);
         }
 
-        .status-panel {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        .base .joint-label {
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
+        .shoulder .joint-label {
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .elbow .joint-label {
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .end-effector .joint-label {
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Control Panel */
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .control-section {
+            background: var(--primary-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--tertiary-bg);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        /* Status Grid */
         .status-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
-        .status-item {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #4299e1;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        .status-card {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
         }
 
-        .status-item h3 {
-            color: #2d3748;
-            margin-bottom: 8px;
-            font-size: 0.9em;
+        .status-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
         }
 
         .status-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #1a202c;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        .joint-controls {
-            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        .status-value.success {
+            color: var(--accent-green);
         }
 
+        .status-value.warning {
+            color: var(--accent-orange);
+        }
+
+        .status-value.error {
+            color: var(--accent-red);
+        }
+
+        /* Joint Controls */
         .joint-control {
             margin-bottom: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .joint-control h3 {
-            color: #2d3748;
-            margin-bottom: 10px;
+        .joint-control:last-child {
+            margin-bottom: 0;
+        }
+
+        .joint-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .joint-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .joint-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            background: #eff6ff;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
         }
 
         .joint-slider {
             width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: #e2e8f0;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-color);
             outline: none;
             -webkit-appearance: none;
+            cursor: pointer;
         }
 
         .joint-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: #4299e1;
+            background: var(--accent-blue);
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-md);
+            border: 2px solid white;
         }
 
         .joint-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: #4299e1;
+            background: var(--accent-blue);
             cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 2px solid white;
+            box-shadow: var(--shadow-md);
         }
 
-        .joint-value {
-            font-weight: bold;
-            color: #2d3748;
-            font-size: 1.1em;
-        }
-
-        .emergency-stop {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #e53e3e;
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        .emergency-stop:hover {
-            background: #c53030;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.6);
-        }
-
-        .connection-status {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        .connected {
-            background: #48bb78;
-            color: white;
-        }
-
-        .disconnected {
-            background: #f56565;
-            color: white;
-        }
-
+        /* Security Alert */
         .security-alert {
-            background: #fed7d7;
-            border: 2px solid #f56565;
-            color: #c53030;
-            padding: 15px;
-            border-radius: 10px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 16px;
+            border-radius: var(--radius-md);
             margin-bottom: 20px;
             display: none;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .security-alert.show {
             display: block;
-            animation: pulse 1s infinite;
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
         }
 
         .joint-moving {
-            animation: pulse 0.5s infinite;
+            animation: pulse 0.8s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .main-content {
+                padding: 16px;
+            }
         }
 
         @media (max-width: 768px) {
-            .dashboard {
+            .header {
+                padding: 0 16px;
+            }
+            
+            .main-content {
+                padding: 12px;
+            }
+            
+            .status-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .container {
-                padding: 10px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🤖 EmbedCore Robot Dashboard</h1>
-            <p>Real-time Robot Visualization & Control</p>
-        </div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-icon">E</div>
+                    <span>EmbedCore</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator" id="connectionStatus">
+                    <div class="status-dot"></div>
+                    <span>Disconnected</span>
+                </div>
+                <button class="emergency-btn" onclick="emergencyStop()">
+                    Emergency Stop
+                </button>
+            </div>
+        </header>
 
-        <div class="connection-status" id="connectionStatus">
-            🔴 Disconnected
-        </div>
-
-        <button class="emergency-stop" onclick="emergencyStop()">
-            🚨 EMERGENCY STOP
-        </button>
-
-        <div class="security-alert" id="securityAlert">
-            🚨 SECURITY ALERT: System compromised - Emergency stop activated!
-        </div>
-
-        <div class="dashboard">
-            <div class="panel robot-visualization">
-                <h2 style="margin-bottom: 20px; color: #2d3748;">Robot Arm Visualization</h2>
-                <div class="robot-arm" id="robotArm">
-                    <div class="base">
-                        <div class="joint-label" style="top: -30px; left: 50%; transform: translateX(-50%);">Base</div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-grid">
+                <!-- Robot Visualization -->
+                <div class="visualization-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Robot Arm Visualization</div>
+                        <div class="panel-subtitle">Real-time position monitoring</div>
                     </div>
-                    <div class="shoulder" id="shoulder">
-                        <div class="joint-label" style="top: -30px; left: 50%; transform: translateX(-50%);">Shoulder</div>
+                    <div class="visualization-content">
+                        <div class="robot-arm" id="robotArm">
+                            <div class="base">
+                                <div class="joint-label">Base</div>
+                            </div>
+                            <div class="shoulder" id="shoulder">
+                                <div class="joint-label">Shoulder</div>
+                            </div>
+                            <div class="elbow" id="elbow">
+                                <div class="joint-label">Elbow</div>
+                            </div>
+                            <div class="end-effector" id="endEffector">
+                                <div class="joint-label">End Effector</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="elbow" id="elbow">
-                        <div class="joint-label" style="top: -30px; left: 50%; transform: translateX(-50%);">Elbow</div>
+                </div>
+
+                <!-- Control Panel -->
+                <div class="control-panel">
+                    <!-- System Status -->
+                    <div class="control-section">
+                        <div class="section-header">
+                            <div class="section-title">System Status</div>
+                        </div>
+                        <div class="section-content">
+                            <div class="status-grid">
+                                <div class="status-card">
+                                    <div class="status-label">System</div>
+                                    <div class="status-value" id="systemStatus">Initializing</div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="status-label">Security</div>
+                                    <div class="status-value" id="securityEvents">0</div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="status-label">Emergency</div>
+                                    <div class="status-value" id="emergencyStatus">Inactive</div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="status-label">Connection</div>
+                                    <div class="status-value" id="connectionInfo">WebSocket</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="end-effector" id="endEffector">
-                        <div class="joint-label" style="top: -30px; left: 50%; transform: translateX(-50%);">End Effector</div>
+
+                    <!-- Joint Controls -->
+                    <div class="control-section">
+                        <div class="section-header">
+                            <div class="section-title">Joint Controls</div>
+                        </div>
+                        <div class="section-content">
+                            <div class="security-alert" id="securityAlert">
+                                Security Alert: System compromised - Emergency stop activated!
+                            </div>
+                            
+                            <div class="joint-control">
+                                <div class="joint-header">
+                                    <span class="joint-name">Base Rotation</span>
+                                    <span class="joint-value" id="baseValue">90°</span>
+                                </div>
+                                <input type="range" class="joint-slider" id="baseSlider" 
+                                       min="0" max="180" value="90" 
+                                       oninput="updateJoint('base', this.value)">
+                            </div>
+                            
+                            <div class="joint-control">
+                                <div class="joint-header">
+                                    <span class="joint-name">Shoulder</span>
+                                    <span class="joint-value" id="shoulderValue">45°</span>
+                                </div>
+                                <input type="range" class="joint-slider" id="shoulderSlider" 
+                                       min="0" max="90" value="45" 
+                                       oninput="updateJoint('shoulder', this.value)">
+                            </div>
+                            
+                            <div class="joint-control">
+                                <div class="joint-header">
+                                    <span class="joint-name">Elbow</span>
+                                    <span class="joint-value" id="elbowValue">45°</span>
+                                </div>
+                                <input type="range" class="joint-slider" id="elbowSlider" 
+                                       min="0" max="90" value="45" 
+                                       oninput="updateJoint('elbow', this.value)">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="panel status-panel">
-                <h2 style="margin-bottom: 20px; color: #2d3748;">System Status</h2>
-                <div class="status-grid">
-                    <div class="status-item">
-                        <h3>System Status</h3>
-                        <div class="status-value" id="systemStatus">Initializing</div>
-                    </div>
-                    <div class="status-item">
-                        <h3>Security Events</h3>
-                        <div class="status-value" id="securityEvents">0</div>
-                    </div>
-                    <div class="status-item">
-                        <h3>Emergency Stop</h3>
-                        <div class="status-value" id="emergencyStatus">Inactive</div>
-                    </div>
-                    <div class="status-item">
-                        <h3>Connection</h3>
-                        <div class="status-value" id="connectionInfo">WebSocket</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel joint-controls">
-                <h2 style="margin-bottom: 20px; color: #2d3748;">Joint Controls</h2>
-                <div class="joint-control">
-                    <h3>Base Rotation <span class="joint-value" id="baseValue">90°</span></h3>
-                    <input type="range" class="joint-slider" id="baseSlider" 
-                           min="0" max="180" value="90" 
-                           oninput="updateJoint('base', this.value)">
-                </div>
-                <div class="joint-control">
-                    <h3>Shoulder <span class="joint-value" id="shoulderValue">45°</span></h3>
-                    <input type="range" class="joint-slider" id="shoulderSlider" 
-                           min="0" max="90" value="45" 
-                           oninput="updateJoint('shoulder', this.value)">
-                </div>
-                <div class="joint-control">
-                    <h3>Elbow <span class="joint-value" id="elbowValue">45°</span></h3>
-                    <input type="range" class="joint-slider" id="elbowSlider" 
-                           min="0" max="90" value="45" 
-                           oninput="updateJoint('elbow', this.value)">
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
 
     <script>
@@ -431,12 +651,13 @@
 
         function updateConnectionStatus(connected) {
             const statusEl = document.getElementById('connectionStatus');
+            const statusText = statusEl.querySelector('span');
             if (connected) {
-                statusEl.textContent = '🟢 Connected';
-                statusEl.className = 'connection-status connected';
+                statusText.textContent = 'Connected';
+                statusEl.className = 'status-indicator connected';
             } else {
-                statusEl.textContent = '🔴 Disconnected';
-                statusEl.className = 'connection-status disconnected';
+                statusText.textContent = 'Disconnected';
+                statusEl.className = 'status-indicator disconnected';
             }
         }
 
@@ -446,8 +667,15 @@
             // Update system status
             document.getElementById('systemStatus').textContent = data.system_status;
             document.getElementById('securityEvents').textContent = data.security_events;
-            document.getElementById('emergencyStatus').textContent = 
-                data.emergency_stop ? 'ACTIVE' : 'Inactive';
+            
+            const emergencyStatus = document.getElementById('emergencyStatus');
+            if (data.emergency_stop) {
+                emergencyStatus.textContent = 'Active';
+                emergencyStatus.className = 'status-value error';
+            } else {
+                emergencyStatus.textContent = 'Inactive';
+                emergencyStatus.className = 'status-value success';
+            }
             
             // Update security alert
             const alertEl = document.getElementById('securityAlert');
@@ -455,6 +683,16 @@
                 alertEl.classList.add('show');
             } else {
                 alertEl.classList.remove('show');
+            }
+            
+            // Update system status color
+            const systemStatus = document.getElementById('systemStatus');
+            if (data.system_status === 'Running') {
+                systemStatus.className = 'status-value success';
+            } else if (data.system_status === 'Initializing') {
+                systemStatus.className = 'status-value warning';
+            } else {
+                systemStatus.className = 'status-value error';
             }
             
             // Update robot visualization
@@ -544,7 +782,9 @@
             }
             
             // Update UI immediately
-            document.getElementById('emergencyStatus').textContent = 'ACTIVE';
+            const emergencyStatus = document.getElementById('emergencyStatus');
+            emergencyStatus.textContent = 'Active';
+            emergencyStatus.className = 'status-value error';
             document.getElementById('securityAlert').classList.add('show');
         }
 
