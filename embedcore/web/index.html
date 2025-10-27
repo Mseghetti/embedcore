@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EmbedCore Control Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/OrbitControls.js"></script>
     <style>
         :root {
             --primary-bg: #0a0a0a;
@@ -602,6 +605,216 @@
             animation: pulse 0.8s infinite;
         }
 
+        /* Analytics and Charts */
+        .analytics-panel {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            padding: 20px;
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .metric-card {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .metric-unit {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .metric-value.excellent { color: var(--accent-green); }
+        .metric-value.good { color: #3b82f6; }
+        .metric-value.warning { color: var(--accent-orange); }
+        .metric-value.poor { color: var(--accent-red); }
+
+        /* Export Controls */
+        .export-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn:hover {
+            background: var(--tertiary-bg);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .export-btn.primary {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .export-btn.primary:hover {
+            background: #2563eb;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--tertiary-bg);
+        }
+
+        /* 3D Visualization */
+        .visualization-3d {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .visualization-controls {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .viz-control-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .viz-control-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            border-color: var(--accent-blue);
+        }
+
+        .viz-control-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        /* Data Logging Status */
+        .logging-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .logging-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        .logging-indicator.inactive {
+            background: var(--text-muted);
+            animation: none;
+        }
+
+        /* Enhanced Mobile Styles */
+        @media (max-width: 768px) {
+            .export-controls {
+                flex-direction: column;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .visualization-3d {
+                height: 300px;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .content-grid {
@@ -671,10 +884,18 @@
                 </div>
             </div>
             <div class="header-right">
+                <div class="logging-status">
+                    <div class="logging-indicator" id="loggingIndicator"></div>
+                    <span id="loggingStatus">Data Logging Active</span>
+                </div>
                 <div class="status-indicator" id="connectionStatus">
                     <div class="status-dot"></div>
                     <span>Disconnected</span>
                 </div>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">Dark</span>
+                </button>
                 <button class="emergency-btn" onclick="emergencyStop()">
                     Emergency Stop
                 </button>
@@ -685,12 +906,8 @@
         <main class="main-content">
             <!-- Hero Section -->
             <div class="hero-section">
-                <h1 class="hero-title">Hardware utilization</h1>
+                <h1 class="hero-title">EmbedCore Control Center</h1>
                 <p class="hero-description">Track device performance in real-time, monitor hardware usage, and maximize efficiency by reducing unnecessary resource consumption.</p>
-                <button class="cta-button" onclick="connectWebSocket()">
-                    Start Free Trial
-                    <span>→</span>
-                </button>
             </div>
 
             <!-- Performance Gauge Section -->
@@ -713,6 +930,62 @@
                 </div>
             </div>
 
+            <!-- Export Controls -->
+            <div class="export-controls">
+                <a href="/api/export/csv" class="export-btn primary" download>
+                    📊 Export CSV
+                </a>
+                <a href="/api/export/json" class="export-btn" download>
+                    📋 Export JSON
+                </a>
+                <button class="export-btn" onclick="refreshAnalytics()">
+                    🔄 Refresh Analytics
+                </button>
+                <button class="export-btn" onclick="toggleDataLogging()">
+                    📝 Toggle Logging
+                </button>
+            </div>
+
+            <!-- Analytics Panel -->
+            <div class="analytics-panel">
+                <div class="panel-header">
+                    <div class="panel-title">Performance Analytics</div>
+                    <div class="panel-subtitle">Real-time metrics and efficiency monitoring</div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Efficiency Score</div>
+                        <div class="metric-value excellent" id="efficiencyScore">95%</div>
+                        <div class="metric-unit">Overall Performance</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Avg Response Time</div>
+                        <div class="metric-value good" id="avgResponseTime">12ms</div>
+                        <div class="metric-unit">Motor Response</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Max Velocity</div>
+                        <div class="metric-value good" id="maxVelocity">45°/s</div>
+                        <div class="metric-unit">Peak Speed</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Power Consumption</div>
+                        <div class="metric-value warning" id="powerConsumption">2.3W</div>
+                        <div class="metric-unit">Total Usage</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Movement Smoothness</div>
+                        <div class="metric-value excellent" id="movementSmoothness">98%</div>
+                        <div class="metric-unit">Motion Quality</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Security Incidents</div>
+                        <div class="metric-value poor" id="securityIncidents">0</div>
+                        <div class="metric-unit">Threats Blocked</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="content-grid">
                 <!-- Robot Visualization -->
                 <div class="visualization-panel">
@@ -721,6 +994,10 @@
                         <div class="panel-subtitle">Real-time position monitoring</div>
                     </div>
                     <div class="visualization-content">
+                        <div class="visualization-controls">
+                            <button class="viz-control-btn active" onclick="switchVisualization('2d')">2D View</button>
+                            <button class="viz-control-btn" onclick="switchVisualization('3d')">3D View</button>
+                        </div>
                         <div class="robot-arm" id="robotArm">
                             <div class="base">
                                 <div class="joint-label">Base</div>
@@ -734,6 +1011,9 @@
                             <div class="end-effector" id="endEffector">
                                 <div class="joint-label">End Effector</div>
                             </div>
+                        </div>
+                        <div class="visualization-3d" id="visualization3d" style="display: none;">
+                            <canvas id="threeCanvas"></canvas>
                         </div>
                     </div>
                 </div>
@@ -763,6 +1043,23 @@
                                     <div class="status-label">Connection</div>
                                     <div class="status-value" id="connectionInfo">WebSocket</div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Charts -->
+                    <div class="control-section">
+                        <div class="section-header">
+                            <div class="section-title">Performance Charts</div>
+                        </div>
+                        <div class="section-content">
+                            <div class="chart-container">
+                                <div class="chart-title">Power Consumption Over Time</div>
+                                <canvas id="powerChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <div class="chart-title">Joint Efficiency</div>
+                                <canvas id="efficiencyChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -816,15 +1113,28 @@
     <script>
         let ws = null;
         let isConnected = false;
+        let isDataLogging = true;
+        let isDarkTheme = true;
+        let powerChart = null;
+        let efficiencyChart = null;
+        let threeScene = null;
+        let threeRenderer = null;
+        let threeCamera = null;
+        let threeControls = null;
+        let robotGroup = null;
+        
         let robotState = {
             joints: [
-                { id: 0, name: 'Base', position: 90, target: 90, min: 0, max: 180, moving: false },
-                { id: 1, name: 'Shoulder', position: 45, target: 45, min: 0, max: 90, moving: false },
-                { id: 2, name: 'Elbow', position: 45, target: 45, min: 0, max: 90, moving: false }
+                { id: 0, name: 'Base', position: 90, target: 90, min: 0, max: 180, moving: false, velocity: 0, acceleration: 0, power_consumption: 0.5 },
+                { id: 1, name: 'Shoulder', position: 45, target: 45, min: 0, max: 90, moving: false, velocity: 0, acceleration: 0, power_consumption: 0.8 },
+                { id: 2, name: 'Elbow', position: 45, target: 45, min: 0, max: 90, moving: false, velocity: 0, acceleration: 0, power_consumption: 0.6 }
             ],
             system_status: 'Initializing',
             security_events: 0,
-            emergency_stop: false
+            emergency_stop: false,
+            system_temperature: 25.0,
+            system_load: 0.0,
+            uptime: 0
         };
 
         function connectWebSocket() {
@@ -1001,13 +1311,277 @@
             document.getElementById('securityAlert').classList.add('show');
         }
 
+        // New enhanced functions
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (isDarkTheme) {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+                document.body.classList.remove('light-theme');
+            } else {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light';
+                document.body.classList.add('light-theme');
+            }
+        }
+
+        function toggleDataLogging() {
+            isDataLogging = !isDataLogging;
+            const indicator = document.getElementById('loggingIndicator');
+            const status = document.getElementById('loggingStatus');
+            
+            if (isDataLogging) {
+                indicator.classList.remove('inactive');
+                status.textContent = 'Data Logging Active';
+            } else {
+                indicator.classList.add('inactive');
+                status.textContent = 'Data Logging Inactive';
+            }
+        }
+
+        function refreshAnalytics() {
+            fetch('/api/analytics')
+                .then(response => response.json())
+                .then(data => {
+                    updateAnalytics(data);
+                    updateCharts(data);
+                })
+                .catch(error => console.error('Error fetching analytics:', error));
+        }
+
+        function updateAnalytics(data) {
+            const metrics = data.performance_metrics;
+            
+            document.getElementById('efficiencyScore').textContent = Math.round(metrics.efficiency_score) + '%';
+            document.getElementById('avgResponseTime').textContent = metrics.avg_response_time.toFixed(1) + 'ms';
+            document.getElementById('maxVelocity').textContent = metrics.max_velocity.toFixed(1) + '°/s';
+            document.getElementById('powerConsumption').textContent = metrics.total_power_consumed.toFixed(1) + 'W';
+            document.getElementById('movementSmoothness').textContent = Math.round(metrics.movement_smoothness) + '%';
+            document.getElementById('securityIncidents').textContent = metrics.security_incidents;
+        }
+
+        function updateCharts(data) {
+            // Update power consumption chart
+            if (powerChart) {
+                const powerData = data.power_consumption_history.map(point => ({
+                    x: new Date(point[0]),
+                    y: point[1]
+                }));
+                
+                powerChart.data.datasets[0].data = powerData;
+                powerChart.update('none');
+            }
+
+            // Update efficiency chart
+            if (efficiencyChart) {
+                const efficiencyData = data.joint_efficiency.map(joint => joint[1]);
+                const labels = data.joint_efficiency.map(joint => joint[0]);
+                
+                efficiencyChart.data.labels = labels;
+                efficiencyChart.data.datasets[0].data = efficiencyData;
+                efficiencyChart.update('none');
+            }
+        }
+
+        function switchVisualization(mode) {
+            const robot2D = document.getElementById('robotArm');
+            const robot3D = document.getElementById('visualization3d');
+            const buttons = document.querySelectorAll('.viz-control-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (mode === '2d') {
+                robot2D.style.display = 'block';
+                robot3D.style.display = 'none';
+                buttons[0].classList.add('active');
+            } else {
+                robot2D.style.display = 'none';
+                robot3D.style.display = 'block';
+                buttons[1].classList.add('active');
+                init3DVisualization();
+            }
+        }
+
+        function init3DVisualization() {
+            if (threeScene) return; // Already initialized
+            
+            const canvas = document.getElementById('threeCanvas');
+            const container = document.getElementById('visualization3d');
+            
+            // Scene setup
+            threeScene = new THREE.Scene();
+            threeScene.background = new THREE.Color(0x0a0a0a);
+            
+            // Camera setup
+            threeCamera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            threeCamera.position.set(5, 5, 5);
+            
+            // Renderer setup
+            threeRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            threeRenderer.setSize(container.clientWidth, container.clientHeight);
+            threeRenderer.shadowMap.enabled = true;
+            threeRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            
+            // Controls
+            threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
+            threeControls.enableDamping = true;
+            threeControls.dampingFactor = 0.05;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            threeScene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            threeScene.add(directionalLight);
+            
+            // Create robot arm
+            create3DRobotArm();
+            
+            // Animation loop
+            animate3D();
+        }
+
+        function create3DRobotArm() {
+            robotGroup = new THREE.Group();
+            
+            // Base
+            const baseGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.2, 16);
+            const baseMaterial = new THREE.MeshLambertMaterial({ color: 0x475569 });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = 0.1;
+            robotGroup.add(base);
+            
+            // Shoulder
+            const shoulderGeometry = new THREE.BoxGeometry(0.1, 1, 0.1);
+            const shoulderMaterial = new THREE.MeshLambertMaterial({ color: 0xef4444 });
+            const shoulder = new THREE.Mesh(shoulderGeometry, shoulderMaterial);
+            shoulder.position.y = 0.7;
+            shoulder.position.x = 0.5;
+            shoulder.rotation.z = Math.PI / 4;
+            robotGroup.add(shoulder);
+            
+            // Elbow
+            const elbowGeometry = new THREE.BoxGeometry(0.1, 0.8, 0.1);
+            const elbowMaterial = new THREE.MeshLambertMaterial({ color: 0x10b981 });
+            const elbow = new THREE.Mesh(elbowGeometry, elbowMaterial);
+            elbow.position.y = 1.2;
+            elbow.position.x = 1.0;
+            elbow.rotation.z = Math.PI / 4;
+            robotGroup.add(elbow);
+            
+            // End effector
+            const endEffectorGeometry = new THREE.SphereGeometry(0.1, 8, 6);
+            const endEffectorMaterial = new THREE.MeshLambertMaterial({ color: 0xf59e0b });
+            const endEffector = new THREE.Mesh(endEffectorGeometry, endEffectorMaterial);
+            endEffector.position.y = 1.6;
+            endEffector.position.x = 1.4;
+            robotGroup.add(endEffector);
+            
+            threeScene.add(robotGroup);
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            
+            if (threeControls) {
+                threeControls.update();
+            }
+            
+            if (threeRenderer && threeScene && threeCamera) {
+                threeRenderer.render(threeScene, threeCamera);
+            }
+        }
+
+        function initCharts() {
+            // Power consumption chart
+            const powerCtx = document.getElementById('powerChart').getContext('2d');
+            powerChart = new Chart(powerCtx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Power (W)',
+                        data: [],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                displayFormats: {
+                                    second: 'HH:mm:ss'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Power (W)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Efficiency chart
+            const efficiencyCtx = document.getElementById('efficiencyChart').getContext('2d');
+            efficiencyChart = new Chart(efficiencyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Base', 'Shoulder', 'Elbow'],
+                    datasets: [{
+                        data: [95, 87, 92],
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff',
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            // Auto-connect WebSocket on page load
             connectWebSocket();
             
             // Initialize robot visualization
             updateRobotVisualization(robotState.joints);
             updateJointControls(robotState.joints);
+            
+            // Initialize charts
+            initCharts();
+            
+            // Load initial analytics
+            refreshAnalytics();
         });
     </script>
 </body>

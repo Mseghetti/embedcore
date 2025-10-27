@@ -46,3 +46,4 @@ EmbedCore is a simulated embedded systems middleware framework combining C++ har
 - Cargo workspace with multiple crates
 - C++ compilation via build.rs
 - Cross-platform support (Windows, Linux, macOS)
+
