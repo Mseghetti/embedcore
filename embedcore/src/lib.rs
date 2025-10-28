@@ -8,6 +8,7 @@ pub mod scheduler;
 pub mod task;
 pub mod security;
 pub mod web_dashboard;
+pub mod control;
 
 // Re-export commonly used types
 pub use devices::{Gpio, Pwm, Uart, Motor, MotorType, MotorDirection};
@@ -15,6 +16,7 @@ pub use scheduler::Scheduler;
 pub use task::{Task, TaskPriority, TaskState};
 pub use security::{SecurityMonitor, SecurityConfig, SecurityError, AttackType, ThreatLevel, init_security, check_operation_security, get_security_monitor};
 pub use web_dashboard::{WebDashboard, DashboardConfig, RobotState, JointInfo};
+pub use control::{PidController, TrajectoryPlanner, CollisionDetector, ForwardKinematics, InverseKinematics, AdvancedControlSystem, Point3D, BoundingBox, JointConfig, TrajectoryPoint};
 
 /// Initialize the EmbedCore system
 /// 

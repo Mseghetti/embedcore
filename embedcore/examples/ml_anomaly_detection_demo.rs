@@ -307,3 +307,4 @@ fn get_attack_emoji(attack_type: embedcore::AttackType) -> &'static str {
         embedcore::AttackType::AnomalyDetected => "🧠",
     }
 }
+

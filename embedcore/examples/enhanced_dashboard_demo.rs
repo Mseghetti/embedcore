@@ -258,3 +258,4 @@ fn get_attack_emoji(attack_type: AttackType) -> &'static str {
         AttackType::PhysicalTampering => "🔧",
     }
 }
+
