@@ -1,6 +1,6 @@
 # EmbedCore - Embedded Systems Middleware Framework
 
-EmbedCore is a simulated embedded systems middleware framework that combines C++ hardware abstraction with Rust application development. It's designed for robotics applications with motor and servo control, featuring a cooperative task scheduler and safe device abstractions.
+EmbedCore is a simulated embedded systems middleware framework that combines C++ hardware abstraction with Rust application development. It's designed for robotics applications with motor and servo control, featuring a cooperative task scheduler and safe device abstractions. Using this project to help me learn how to program in rust. 
 
 ## Architecture
 
@@ -259,13 +259,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Built with Rust's safety guarantees and C++'s performance
 - Designed for educational and prototyping purposes
 
-## Support
-
-For questions, issues, or contributions:
-
-- Open an issue on GitHub
-- Check the examples for usage patterns
-- Review the test cases for expected behavior
 
 ---
 
