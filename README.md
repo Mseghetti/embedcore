@@ -8,6 +8,7 @@ EmbedCore is a simulated embedded systems middleware framework that combines C++
 - **Rust Application Framework** - Safe device wrappers, task scheduler, and motor control logic
 - **FFI Bridge** - Safe interoperability between C++ and Rust
 - **Desktop Simulator** - No actual hardware required
+- **MCP Server** - Model Context Protocol server for AI assistant integration
 
 ## Project Structure
 
@@ -45,6 +46,14 @@ embedcore/
 │           ├── gpio.rs
 │           ├── pwm.rs
 │           └── motor.rs
+├── embedcore-mcp/                # MCP server for AI integration
+│   ├── Cargo.toml
+│   ├── README.md
+│   └── src/
+│       ├── main.rs
+│       ├── server.rs
+│       ├── tools.rs
+│       └── resources.rs
 └── examples/
     ├── blinky.rs                 # Simple GPIO example
     ├── servo_sweep.rs            # Servo motor control
@@ -192,6 +201,29 @@ fn main() {
     }
 }
 ```
+
+## MCP Server
+
+EmbedCore includes an MCP (Model Context Protocol) server that enables AI assistants to interact with embedded devices and access project documentation.
+
+### Quick Start
+
+```bash
+# Build the MCP server
+cargo build --release -p embedcore-mcp
+
+# Run the server (communicates via stdio)
+./target/release/embedcore-mcp
+```
+
+### Features
+
+- **Device Control Tools**: GPIO, PWM, Motor, and UART control
+- **System Status**: Initialize system, get time, monitor status
+- **Documentation Resources**: Access README and code context
+- **Code Examples**: Browse and read example code
+
+See [embedcore-mcp/README.md](embedcore-mcp/README.md) for detailed documentation and configuration instructions.
 
 ## Use Cases
 

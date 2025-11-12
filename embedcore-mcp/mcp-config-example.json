@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "embedcore": {
+      "command": "/absolute/path/to/embedcore/target/release/embedcore-mcp",
+      "env": {
+        "EMBEDCORE_ROOT": "/absolute/path/to/embedcore"
+      }
+    }
+  }
+}
+

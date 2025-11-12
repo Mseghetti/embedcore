@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "embedcore-sys",
     "embedcore",
+    "embedcore-mcp",
 ]
 
 [workspace.dependencies]
