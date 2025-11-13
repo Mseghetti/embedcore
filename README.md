@@ -225,6 +225,12 @@ cargo build --release -p embedcore-mcp
 
 See [embedcore-mcp/README.md](embedcore-mcp/README.md) for detailed documentation and configuration instructions.
 
+For Claude Desktop setup, see [embedcore-mcp/SETUP.md](embedcore-mcp/SETUP.md) or run the automated setup script:
+```bash
+cd embedcore-mcp
+./setup-mcp.sh
+```
+
 ## Use Cases
 
 ### Robotics Applications
