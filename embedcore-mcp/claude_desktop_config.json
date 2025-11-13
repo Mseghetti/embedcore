@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "embedcore": {
+      "command": "/Users/micah/embedcore/target/release/embedcore-mcp",
+      "env": {
+        "EMBEDCORE_ROOT": "/Users/micah/embedcore"
+      }
+    }
+  }
+}
+
