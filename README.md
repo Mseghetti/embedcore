@@ -301,3 +301,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Note**: This is a simulation framework designed for learning and prototyping. For production embedded systems, consider using actual hardware-specific libraries and real-time operating systems.
+**Note**: pc is broken, project on temp pause
